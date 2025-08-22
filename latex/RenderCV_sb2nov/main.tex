@@ -1,0 +1,609 @@
+\documentclass[10pt, letterpaper]{article}
+
+% Packages:
+\usepackage[
+    ignoreheadfoot, % set margins without considering header and footer
+    top=2 cm, % seperation between body and page edge from the top
+    bottom=2 cm, % seperation between body and page edge from the bottom
+    left=2 cm, % seperation between body and page edge from the left
+    right=2 cm, % seperation between body and page edge from the right
+    footskip=1.0 cm, % seperation between body and footer
+    % showframe % for debugging 
+]{geometry} % for adjusting page geometry
+\usepackage{titlesec} % for customizing section titles
+\usepackage{tabularx} % for making tables with fixed width columns
+\usepackage{array} % tabularx requires this
+\usepackage[dvipsnames]{xcolor} % for coloring text
+\definecolor{primaryColor}{RGB}{0, 79, 144} % define primary color
+\usepackage{enumitem} % for customizing lists
+\usepackage{fontawesome5} % for using icons
+\usepackage{amsmath} % for math
+\usepackage[
+    pdftitle= \NombresApellidos,
+    pdfauthor= \NombresApellidos,
+    pdfcreator={LaTeX with RenderCV},
+    colorlinks=true,
+    urlcolor=primaryColor
+]{hyperref} % for links, metadata and bookmarks
+\usepackage[pscoord]{eso-pic} % for floating text on the page
+\usepackage{calc} % for calculating lengths
+\usepackage{bookmark} % for bookmarks
+\usepackage{lastpage} % for getting the total number of pages
+\usepackage{changepage} % for one column entries (adjustwidth environment)
+\usepackage{paracol} % for two and three column entries
+\usepackage{ifthen} % for conditional statements
+\usepackage{needspace} % for avoiding page brake right after the section title
+\usepackage{iftex} % check if engine is pdflatex, xetex or luatex
+
+% Ensure that generate pdf is machine readable/ATS parsable:
+\ifPDFTeX
+    \input{glyphtounicode}
+    \pdfgentounicode=1
+    % \usepackage[T1]{fontenc} % this breaks sb2nov
+    \usepackage[utf8]{inputenc}
+    \usepackage{lmodern}
+\fi
+
+
+
+% Some settings:
+\AtBeginEnvironment{adjustwidth}{\partopsep0pt} % remove space before adjustwidth environment
+\pagestyle{empty} % no header or footer
+\setcounter{secnumdepth}{0} % no section numbering
+\setlength{\parindent}{0pt} % no indentation
+\setlength{\topskip}{0pt} % no top skip
+\setlength{\columnsep}{0cm} % set column seperation
+\makeatletter
+\let\ps@customFooterStyle\ps@plain % Copy the plain style to customFooterStyle
+\patchcmd{\ps@customFooterStyle}{\thepage}{
+    \color{gray}\textit{\small \NombresApellidos - Pagina \thepage{} de \pageref*{LastPage}}
+}{}{} % replace number by desired string
+\makeatother
+\pagestyle{customFooterStyle}
+
+\titleformat{\section}{\needspace{4\baselineskip}\bfseries\large}{}{0pt}{}[\vspace{1pt}\titlerule]
+
+\titlespacing{\section}{
+    % left space:
+    -1pt
+}{
+    % top space:
+    0.3 cm
+}{
+    % bottom space:
+    0.2 cm
+} % section title spacing
+
+\renewcommand\labelitemi{$\circ$} % custom bullet points
+\newenvironment{highlights}{
+    \begin{itemize}[
+        topsep=0.10 cm,
+        parsep=0.10 cm,
+        partopsep=0pt,
+        itemsep=0pt,
+        leftmargin=0.4 cm + 10pt
+    ]
+}{
+    \end{itemize}
+} % new environment for highlights
+
+\newenvironment{highlightsforbulletentries}{
+    \begin{itemize}[
+        topsep=0.10 cm,
+        parsep=0.10 cm,
+        partopsep=0pt,
+        itemsep=0pt,
+        leftmargin=10pt
+    ]
+}{
+    \end{itemize}
+} % new environment for highlights for bullet entries
+
+
+\newenvironment{onecolentry}{
+    \begin{adjustwidth}{
+        0.2 cm + 0.00001 cm
+    }{
+        0.2 cm + 0.00001 cm
+    }
+}{
+    \end{adjustwidth}
+} % new environment for one column entries
+
+\newenvironment{twocolentry}[2][]{
+    \onecolentry
+    \def\secondColumn{#2}
+    \setcolumnwidth{\fill, 4.5 cm}
+    \begin{paracol}{2}
+}{
+    \switchcolumn \raggedleft \secondColumn
+    \end{paracol}
+    \endonecolentry
+} % new environment for two column entries
+
+\newenvironment{header}{
+    \setlength{\topsep}{0pt}\par\kern\topsep\centering\linespread{1.5}
+}{
+    \par\kern\topsep
+} % new environment for the header
+
+\newcommand{\placelastupdatedtext}{% \placetextbox{<horizontal pos>}{<vertical pos>}{<stuff>}
+  \AddToShipoutPictureFG*{% Add <stuff> to current page foreground
+    \put(
+        \LenToUnit{\paperwidth-2 cm-0.2 cm+0.05cm},
+        \LenToUnit{\paperheight-1.0 cm}
+    ){\vtop{{\null}\makebox[0pt][c]{
+        \small\color{gray}\textit{CV DHM | 2025-08-20}\hspace{\widthof{CV DHM | 2025-08-20}}
+    }}}%
+  }%
+}%
+
+% save the original href command in a new command:
+\let\hrefWithoutArrow\href
+
+% new command for external links:
+\renewcommand{\href}[2]{\hrefWithoutArrow{#1}{\ifthenelse{\equal{#2}{}}{ }{#2 }\raisebox{.15ex}{\footnotesize \faExternalLink*}}}
+
+
+\begin{document}
+    \newcommand{\AND}{\unskip
+        \cleaders\copy\ANDbox\hskip\wd\ANDbox
+        \ignorespaces
+    }
+    \newsavebox\ANDbox
+    \sbox\ANDbox{}
+
+    \placelastupdatedtext
+    \begin{header}
+        \textbf{\fontsize{24 pt}{24 pt}\selectfont \NombresApellidos}
+
+        \vspace{0.3 cm}
+
+        \normalsize
+        \mbox{{\color{black}\footnotesize\faMapMarker*}\hspace*{0.13cm} \Location}%
+        \kern 0.25 cm%
+        \AND%
+        \kern 0.25 cm%
+        %\mbox{\hrefWithoutArrow{\Email}{\color{black}{\footnotesize\faEnvelope[regular]}\hspace*{0.13cm} \Email }}%
+        \kern 0.25 cm%
+        \AND%
+        \kern 0.25 cm%
+        \mbox{{\color{black}{\footnotesize\faPhone*}\hspace*{0.13cm}\Celular}}%
+        \kern 0.25 cm%
+        %\AND%
+        %\kern 0.25 cm%
+        %\mbox{\hrefWithoutArrow{https://yourwebsite.com/}{\color{black}%{\footnotesize\faLink}\hspace*{0.13cm}yourwebsite.com}}%
+        %\kern 0.25 cm%
+        \AND%
+        \kern 0.25 cm%
+        \mbox{{\color{black}{\footnotesize\faLinkedinIn}\hspace*{0.13cm}\LinkedIn}}%
+        \kern 0.25 cm%
+        \AND%
+        \kern 0.25 cm%
+        \mbox{{\color{black}{\footnotesize\faGithub}\hspace*{0.13cm}\GitHub}}%
+    \end{header}
+
+    \vspace{0.3 cm - 0.3 cm}
+
+
+    \section{Resume}
+        \begin{onecolentry}
+            \PefilSummary
+        \end{onecolentry}
+
+        \vspace{0.2 cm}
+
+
+    
+    % \section{Quick Guide}
+
+    % \begin{onecolentry}
+    %     \begin{highlightsforbulletentries}
+
+
+    %     \item Each section title is arbitrary and each section contains a list of entries.
+
+    %     \item There are 7 unique entry types: \textit{BulletEntry}, \textit{TextEntry}, \textit{EducationEntry}, \textit{ExperienceEntry}, \textit{NormalEntry}, \textit{PublicationEntry}, and \textit{OneLineEntry}.
+
+    %     \item Select a section title, pick an entry type, and start writing your section!
+
+    %     \item \href{https://docs.rendercv.com/user_guide/}{Here}, you can find a comprehensive user guide for RenderCV.
+
+
+    %     \end{highlightsforbulletentries}
+    % \end{onecolentry}
+
+    
+    
+    \section{Educación}
+
+    % primera entrada
+        \begin{twocolentry}{
+        \textit{Oct 2025}}
+            \textbf{Maestría en Estadística Aplicada}\\
+            \textit{Universidad Tecnológica de Bolívar|UTB}
+            % \textit{\hrefWithoutArrow{https://www.utb.edu.co/}{UTB}}    % Universidad Tecnológica de Bolívar
+        \end{twocolentry}
+        \vspace{0.10 cm}
+        \begin{onecolentry}
+            \begin{highlights}
+                \item \textbf{Linea de investigación:} Detección de anomalias mediante métodos no supervisados, Registros administrativos de prestación de servicios de salud, RIPS.
+                \item \textbf{Trabajo de grado}: \href{https://primo.utb.edu.co/permalink/57UTB_INST/1rvrphv/alma99694431305731}{ Detección de anomalías con técnicas no supervisadas de aprendizaje automático: aplicación a los Registros Individuales de Prestación de Servicios de Salud (RIPS)})
+            \end{highlights}
+        \end{onecolentry}
+
+        \vspace{0.20 cm}
+
+    % segunda entrada
+        \begin{twocolentry}{
+        \textit{2019}}
+            \textbf{Especialización en Gestión de Proyectos}\\
+            \textit{Universidad Nacional Abierta y a Distancia|UNAD}
+            % \textit{\hrefWithoutArrow{https://www.unad.edu.co/}{UNAD}}    % Universidad Nacional Abierta y a Distancia
+        \end{twocolentry}
+        \vspace{0.10 cm}
+        \begin{onecolentry}
+            \begin{highlights}
+                \item \textbf{Trabajo de grado}: Constitución de una empresa de servicios de asistencia técnica en el campo del mantenimiento residencial en la ciudad de Cartagena, Bolívar
+            \end{highlights}
+        \end{onecolentry}
+
+    \vspace{0.20 cm}
+
+    % tercera entrada
+        \begin{twocolentry}{
+        \textit{2010}}
+            \textbf{Administración de Empresas}\\
+            \textit{Universidad Tecnológica de Bolívar|UTB}
+            % \textit{\hrefWithoutArrow{https://www.utb.edu.co/}{UTB}}    % Universidad Tecnológica de Bolívar
+        \end{twocolentry}
+
+        \vspace{0.10 cm}
+        \begin{onecolentry}
+            \begin{highlights}
+                \item \textbf{Trabajo de grado}: \href{https://primo.utb.edu.co/permalink/57UTB_INST/1ce09b5/alma990000307950205731}{Caracterización de las empresas Mipyme asociados a Fenalco-Cartagena : sector licores y abarrotes.}
+            \end{highlights}
+        \end{onecolentry}
+
+    \subsection{Diplomados}
+
+    % primera entrada
+        \begin{twocolentry}{
+        \textit{2019}}
+            \textbf{Ciencia de Datos}|\textit{Correlation-One}
+        \end{twocolentry}
+        \vspace{0.10 cm}
+        \begin{onecolentry}
+            \begin{highlights}
+                \textbf{BootCamp}: \emph{Formación intensiva en Ciencia de Datos, donde aprendi a trabajar con Jupyter Notebooks, utilizar bibliotecas de Python  para realizar análisis exploratorio de datos con Pandas y generación de visualizaciones. Asimismo, se abordaron distintas técnicas de Ciencia de Datos e Inteligencia Artificial, como Random Forests, KNN, redes neuronales convolucionales (CNNs) y procesamiento del lenguaje natural (PLN), con un enfoque práctico orientado a la resolución de problemas reales.}\\
+                \href{https://www.credential.net/ca84c00e-5554-47e4-8054-8c2b41a3888f}{DS4A: Colombia 2019}
+            \end{highlights}
+        \end{onecolentry}
+
+        \vspace{0.20 cm}
+
+    % segunda entrada
+        \begin{twocolentry}{
+        \textit{2019}}
+            \textbf{Big Data \& Business Analytics}|\textit{U. de La Sabana}
+        \end{twocolentry}
+        \vspace{0.20 cm}
+
+    % tercera entrada
+        \begin{twocolentry}{
+        \textit{2016}}
+            \textbf{Business Intelligence \&  Data Mining}|\textit{U. El Bosque}
+        \end{twocolentry}
+        \vspace{0.20 cm}
+
+    % cuarta entrada
+        \begin{twocolentry}{
+        \textit{2014}}
+            \textbf{Formación Pedagógica para la Educación Superior}|\textit{U. De Cartagena}
+        \end{twocolentry}
+        \vspace{0.20 cm}
+
+
+    \subsection{Cursos}
+
+        \begin{highlights}
+            
+            \item \begin{twocolentry}{
+        \textit{may. 2021}}
+            AWS Cloud Practitioner Essentials|\textbf{Amazon Web Services (AWS)}
+        \end{twocolentry}
+		
+       \item  \begin{twocolentry}{
+        \textit{dic. 2020}}
+            Gestión de datos y servicios a través de las TIC|\textbf{Cuenta de Alto Costo}
+        \end{twocolentry}
+		
+       \item  \begin{twocolentry}{
+        \textit{nov. 2020}}
+            How to Win a DS Competition: Learn from Top Kagglers|\textbf{Coursera}
+        \end{twocolentry}
+		
+        \item \begin{twocolentry}{
+        \textit{sept. 2020}}
+            Google Cloud Platform Big Data and ML Fundamentals|\textbf{Google Cloud}
+        \end{twocolentry}
+		
+        \item \begin{twocolentry}{
+        \textit{abr. 2020}}
+            Top 10 Worst Tableau Designer Mistakes and How to Avoid Them|\textbf{Udemy}
+        \end{twocolentry}
+		
+        \item \begin{twocolentry}{
+        \textit{mar. 2020}}
+            Análisis de Información con Tableau|\textbf{Udemy}
+        \end{twocolentry}
+		
+        \item \begin{twocolentry}{
+        \textit{feb. 2020}}
+            Machine Learning With Big Data|\textbf{UC San Diego}
+        \end{twocolentry}
+		
+        \item \begin{twocolentry}{
+        \textit{ene. 2020}}
+            Big data: adquisición y almacenamiento|\textbf{U. Autònoma de Barcelona}
+        \end{twocolentry}
+		
+        \item \begin{twocolentry}{
+        \textit{ene. 2020}}
+            Data Analysis with Python|\textbf{IBM}
+        \end{twocolentry}
+		
+        \item \begin{twocolentry}{
+        \textit{dic. 2019}}
+            Automate the Boring Stuff with Python Programming|\textbf{Udemy}
+        \end{twocolentry}
+		
+        \begin{twocolentry}{
+        \textit{dic. 2019}}
+            Microsoft Power BI Desktop|\textbf{Udemy}
+        \end{twocolentry}
+		
+        \item \begin{twocolentry}{
+        \textit{jun. 2018}}
+            Auditor interno|\textbf{ICONTEC}
+        \end{twocolentry}
+		
+        \item \begin{twocolentry}{
+        \textit{sept. 2017}}
+            Analyzing and visualizing data with Microsoft Power Bi|\textbf{Business Insights}
+        \end{twocolentry}
+		
+        \item \begin{twocolentry}{
+        \textit{ene. 2017}}
+            SQL Fundamentals|\textbf{Sololearn}
+        \end{twocolentry}
+
+% \end{itemize}
+\end{highlights}
+
+
+    
+    \section{Experience}
+
+
+    % primera
+        \begin{twocolentry}{
+            \textit{Cartagena, CO}
+            \textit{May.2018|Actualidad}}
+            \textbf{Analista de Información} \\
+            \textit{Coosalud EPS SA}
+        \end{twocolentry}
+        \vspace{0.10 cm}
+        \begin{onecolentry}
+            \begin{highlights}
+                \item Procesos: costo en salud, nota técnica, seguimiento de frecuencias de uso.
+                \item Implementación de estrategias BI (DataLake, Data Warehouse) para la gestión de información en salud.
+                \item Desarrollo de modelos de costo en salud y nota técnica, apoyando la planeación financiera.
+                \item Creación de dashboards interactivos en Power BI y soluciones analíticas en Python, mejorando la toma de decisiones directivas.
+            \end{highlights}
+        \end{onecolentry}
+        \vspace{0.2 cm}
+        
+    % segunda
+        \begin{twocolentry}{
+            \textit{Cartagena, CO}
+            \textit{Feb.2015|Abr.2018}}
+            \textbf{Asistente de Riesgo en Salud}\\
+            \textit{Coosalud EPS SA}
+        \end{twocolentry}
+        \vspace{0.10 cm}
+        \begin{onecolentry}
+            \begin{highlights}
+                \item Seguimiento a las cohortes de interes (Cardiovasculares, Renales, Materno-Perinatal, Hemofilia, Huerfanas, entre otras.
+                Apoyo en los procesos relacionados con el área de Riesgos en Salud y relacionamiento con las diferentes áreas de la organización.
+                \item Seguimiento a reportes normativos: Sivigila, CAC, Resolución 0256 de 2016, Resolución 1536 de 2015, Resolución 4505 de 2012.
+            \end{highlights}
+        \end{onecolentry}
+        \vspace{0.2 cm}
+
+    % tercer
+        \begin{twocolentry}{
+            \textit{Barranquilla, CO}
+            \textit{Ago.2014|Ene.2015}}
+            \textbf{Coordinador Informático en Salud}\\
+            \textit{Salud Familiar SA}
+        \end{twocolentry}
+        \vspace{0.10 cm}
+        \begin{onecolentry}
+            \begin{highlights}
+                \item Asegurar la transferencia de información de salud al cliente con calidad y a tiempo.
+                \item Realizar reportes de transferencia de información y hallazgos del proceso.
+            \end{highlights}
+        \end{onecolentry}
+        \vspace{0.2 cm}
+
+    % cuarto
+        \begin{twocolentry}{
+            \textit{Cartagena, CO}
+            \textit{Nov.2010|Jun.2014}}
+            \textbf{Asistente Administrativo y de Investigación}\\
+            \textit{Universidad de Cartagena|Doctorado en Medicina Tropical}
+        \end{twocolentry}
+        \vspace{0.10 cm}
+        \begin{onecolentry}
+            \begin{highlights}
+                \item Seguimiento al proceso de inscripción y matricula de los aspirantes.
+                \item Apoyo a los estudiantes en los procesos académicos, administrativos y financieros.
+                \item Apoyo en la gestión de proyectos de investigación y presentación a convocatorias nacionales e internacionales.
+                \item Apoyo en el proceso de investigación de las lineas de investigación del programa.
+            \end{highlights}
+        \end{onecolentry}
+        \vspace{0.2 cm}
+
+    % quinto
+        \begin{twocolentry}{
+            \textit{Cartagena, CO}
+            \textit{Feb.2010|Abr.2010}}
+            \textbf{Coordinador de Digitadores}\\
+            \textit{Universidad de Cartagena|Doctorado en Medicina Tropical}
+        \end{twocolentry}
+        \vspace{0.10 cm}
+        \begin{onecolentry}
+            \begin{highlights}
+                \item Proyecto \emph{VIGILANCIA Y CONTROL DE ENFERMEDADES TRASMITIDAS POR ROEDORES – PLAGAS} ejecutado por el Doctorado en Medicina Tropical y el Grupo de Investigación UNIMOL
+                \item Entrenamiento y capacitación a digitadores.
+                \item Compilación de información y estructuración de informes.
+            \end{highlights}
+        \end{onecolentry}
+        \vspace{0.2 cm}
+
+
+
+
+    
+    \section{Publications}
+
+
+
+        
+        \begin{samepage}
+
+        % primer
+            \begin{twocolentry}{Nov.2023}
+            \textbf{A proposed method to validate anomalies detected with unsupervised models} | IEEE Colombian Caribbean Conference (C3) | \href{https://ieeexplore.ieee.org/document/10436300}{10.1109/C358072.2023 .10436300}
+                \vspace{0.20 cm}
+            \end{twocolentry}
+
+        % segundo
+            \begin{twocolentry}{Sep.2023}
+            \textbf{Detección de anomalías con técnicas no supervisadas: impacto en la implementación de modelos de clasificación} (Poster) | Pag 24 | \href{https://repositorio.utb.edu.co/entities/publication/d14c6f89-bce2-411b-80e6-551c7ba2b039}{V International Workshop on Applied Statistic and Data Science}
+                \vspace{0.20 cm}
+            \end{twocolentry}
+
+        % tercer
+            \begin{twocolentry}{Jun.2019}
+            \textbf{Determinantes de estancia prolongada de neonatos en una unidad de cuidados intensivos} | Revista Ciencias de la Salud | Vol 16 No 2 |  \href{https://doi.org/10.12804/revistas.urosario.edu.co/revsalud/a.7928}{doi.org/10. 12804/revistas.urosario.edu.co/revsalud/a.7928}
+                \vspace{0.20 cm}
+            \end{twocolentry}
+
+        % cuarta
+            \begin{twocolentry}{May.2018}
+            \textbf{Survival of Patients with Diabetes Mellitus By Residential Area in Colombia, 2008-2017} | ISPOR 2018 Baltimore | Vol 21 Suplemento 1 |  \href{https://doi.org/10.1016/j.jval.2018.04.537}{doi.org/10.10 16/j.jval.2018.04.537}
+                \vspace{0.20 cm}
+            \end{twocolentry}
+
+        % quinto
+            \begin{twocolentry}{Feb.2017}
+            \textbf{Frecuencia de enfermedades huérfanas en Cartagena de Indias, Colombia} | Revista de Salud Pública | \href{https://doi.org/10.15446/rsap.v18n6.53962}{doi.org/10.15446/rsap.v18n6.53962}
+                \vspace{0.20 cm}
+            \end{twocolentry}
+            
+        \end{samepage}
+
+
+    
+    \section{Projects}
+
+
+        \begin{twocolentry}{
+        \color{black}{\footnotesize\faGithub}\hspace*{0.05cm} \textit{\href{https://github.com/dherrerambo/RepoTesisAnomDetect}{TesisAnomDetect}}}
+            \textbf{Repositorio de mi Tesis de Maestría: Detección de anomalias}
+        \end{twocolentry}
+        \vspace{0.10 cm}
+        \begin{onecolentry}
+            \begin{highlights}
+                \item Repositorio con la lógica y experimentación implementada para obtención de resultados en la tesis.
+                \item Herramientas usadas: SQL, PowerBi, Excel, Snowflake, AWS(Athena, Glue, Lambda, SageMaker)
+            \end{highlights}
+        \end{onecolentry}
+        \vspace{0.2 cm}
+
+        \begin{twocolentry}{
+        \color{black}{\footnotesize\faGithub}\hspace*{0.05cm} \textit{\href{https://github.com/dherrerambo/datos.gov.co}{datos.gov.co}}}
+            \textbf{Disponer tablas de datos abiertos en python}
+        \end{twocolentry}
+        \vspace{0.10 cm}
+        \begin{onecolentry}
+            \begin{highlights}
+                \item Consumir las tablas publicas de datos abiertos para consumo en diferentes proceso.
+                \item Herramientas usadas: Python, Pandas, Sodapy
+            \end{highlights}
+        \end{onecolentry}
+        \vspace{0.2 cm}
+    
+        
+        \begin{twocolentry}{}
+            \textbf{Pipeline de migración de Salesforce a AWS}
+        \end{twocolentry}
+        \vspace{0.10 cm}
+        \begin{onecolentry}
+            \begin{highlights}
+                \item Construccion de pipeline para migración de información de Salesforce a S3 en AWS
+                \item Validación de consistencia de información
+                \item Implementación de proceso de actualización
+                \item Disposicion de información para consumo en Athena
+                \item Herramientas usadas: Salesforce, AWS (S3, Glue, Lambda y Athena)
+            \end{highlights}
+        \end{onecolentry}
+        \vspace{0.2 cm}
+
+        \begin{twocolentry}{
+        \color{black}{\footnotesize\faGithub}\hspace*{0.05cm} \textit{\href{https://github.com/dherrerambo/Capacitacion_PowerBi}{Power Bi}}}
+            \textbf{Implementación de informes para seguimiento en PowerBi para contratos bajo la modalidad de PGP}
+        \end{twocolentry}
+        \vspace{0.10 cm}
+        \begin{onecolentry}
+            \begin{highlights}
+                \item Implementación de informes en PowerBi para seguimiento de contratos PGP a régimen contributivo y Subsidiado en una IPS de Cartagena.
+                \item Capacitación sobre uso e implementación de tableros en PoweBi.
+                \item Herramientas usadas: SQL, PowerBi, PowerApps, Excel
+            \end{highlights}
+        \end{onecolentry}
+        \vspace{0.2 cm}
+
+        \begin{twocolentry}{
+        \textit{ }}
+            \textbf{Sistema de: Gestión de Riesgo Individual (GRIND)}
+        \end{twocolentry}
+        \vspace{0.10 cm}
+        \begin{onecolentry}
+            \begin{highlights}
+                \item Proyecto de inteligencia de negocios aplicado al sector salud con el objetivo de tener la caracterización individual de cada uno de los afiliados de una EPS, teniendo en cuenta todos los factores de riesgos, patologías y condiciones de las personas
+                \item Herramientas usadas: SQL, PowerBi, PowerApps, Excel
+            \end{highlights}
+        \end{onecolentry}
+
+
+
+
+    \section{Technologies}
+        
+        \begin{onecolentry}
+            \textbf{Languages:} Python, SQL, Spark, R
+        \end{onecolentry}
+
+        \vspace{0.2 cm}
+
+        \begin{onecolentry}
+            \textbf{Technologies:} PowerBi, Tableau, Jupiter Notebooks, Excel, AWS, Snowflake, Google Colab
+        \end{onecolentry}
+
+
+    
+
+\end{document}
